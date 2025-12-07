@@ -1,0 +1,94 @@
+"# Unity .gitignore" 
+
+# =============== Unity 特定文件 ===============
+
+# Unity自动生成的文件夹
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+
+# 内存捕获文件
+/[Mm]emoryCaptures/
+
+# 崩溃日志和报告
+[Ee]rrors/
+[Ww]arnings/
+[Ii]nfos/
+/[Ss]tackTraces/
+crashlytics-build.properties
+
+# 资产元数据文件（但Unity需要这些文件，所以我们要提交它们）
+# 注意：我们不忽略 *.meta 文件，因为Unity需要它们来跟踪资产
+
+# 自动生成的Visual Studio/MonoDevelop文件
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.opendb
+*.VC.db
+
+# Unity3D生成的文件
+sysinfo.txt
+*.apk
+*.aab
+*.ipa
+*.app
+
+# 资源缓存
+/.assetbundlecache
+
+# 打包的地址资源
+/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
+/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.hash*
+
+# 临时和自动生成的Android/iOS文件
+[Aa]ssets/[Ss]treamingAssets/aa.meta
+[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# =============== 系统文件 ===============
+
+# Windows
+Thumbs.db
+[Dd]esktop.ini
+
+# macOS
+.DS_Store
+._*
+
+# Linux
+*~
+
+# =============== IDE 文件 ===============
+
+# Visual Studio Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Visual Studio
+*.pidb.meta
+*.pdb.meta
+
+# =============== 项目特定 ===============
+
+# 如果你有自定义的忽略规则，可以放在这里
+
+# 注意：我们故意不包含 *.meta 文件，因为Unity需要它们
