@@ -1,0 +1,251 @@
+{
+    "version": 1,
+    "name": "PlayerControls",
+    "maps": [
+        {
+            "name": "GyroDrawing",
+            "id": "7a03a09b-7af1-4a41-8398-0d785ddf5737",
+            "actions": [
+                {
+                    "name": "DeviceRotation",
+                    "type": "Value",
+                    "id": "762c0e24-20f4-4da8-9853-8e67167dc32d",
+                    "expectedControlType": "Vector3",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "DeviceTilt",
+                    "type": "Value",
+                    "id": "092ff787-3a3c-412f-8240-dd9c5db48de5",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "TiltSensitivity",
+                    "type": "Value",
+                    "id": "4ce7e277-a4c2-4d09-841d-0fd830d9c961",
+                    "expectedControlType": "Axis",
+                    "processors": "Scale(factor=2),AxisDeadzone(min=0.5,max=5)",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "7d749565-bdf4-4a78-9548-7c257da1dd9e",
+                    "path": "<AttitudeSensor>/attitude",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DeviceRotation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0f96ff17-95ca-4bc3-ac77-53bc3ace64e3",
+                    "path": "<Accelerometer>/acceleration",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DeviceTilt",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "2D Vector",
+                    "id": "b0a673ba-1948-48b1-8ac1-6fa031fac6ac",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DeviceTilt",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "0615b9ab-f0e1-4406-9d2c-3709a28326a1",
+                    "path": "<Keyboard>/upArrow",
+                    "interactions": "",
+                    "processors": "ScaleVector2(x=0)",
+                    "groups": "",
+                    "action": "DeviceTilt",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "243b2ad6-1bc3-431f-a750-91a372834a7e",
+                    "path": "<Keyboard>/downArrow",
+                    "interactions": "",
+                    "processors": "ScaleVector2(x=0,y=-1)",
+                    "groups": "",
+                    "action": "DeviceTilt",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "87305730-d1da-43a7-a70d-a466ba0ef489",
+                    "path": "<Keyboard>/leftArrow",
+                    "interactions": "",
+                    "processors": "ScaleVector2(x=-1,y=0)",
+                    "groups": "",
+                    "action": "DeviceTilt",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "56dafeb0-6150-4b73-bba2-eca896de92b9",
+                    "path": "<Keyboard>/rightArrow",
+                    "interactions": "",
+                    "processors": "ScaleVector2(y=0)",
+                    "groups": "",
+                    "action": "DeviceTilt",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "38f0ce87-536f-4d7a-899b-05f50acceb03",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TiltSensitivity",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "TouchInteraction",
+            "id": "23a3f100-fb67-4239-ad36-3d825e82a560",
+            "actions": [
+                {
+                    "name": "TouchPosition",
+                    "type": "Value",
+                    "id": "211a2edf-519a-48d7-8bf6-0e44a16e00ab",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "TouchDelta",
+                    "type": "Value",
+                    "id": "5e13dc01-790e-466e-98ed-87fbbb64471a",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "PrimaryTouch",
+                    "type": "PassThrough",
+                    "id": "ab5f9760-05dd-4154-a6e4-13837b5cd361",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TouchPress",
+                    "type": "Button",
+                    "id": "29029a12-313e-480c-869f-7a7ae67faba6",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "418d3535-c87b-403f-a39d-da3bd81a706e",
+                    "path": "<Touchscreen>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TouchPosition",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "74716506-41de-4aff-a70c-730384c8a695",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TouchPosition",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "08aa2719-4a5f-4a9b-9bfd-fd5b01641a38",
+                    "path": "<Touchscreen>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TouchDelta",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "77788d35-a16e-4f89-8a2f-3b7f558ecd88",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TouchDelta",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e5c09dd3-ac56-40c8-a7bf-123f29d37113",
+                    "path": "<Touchscreen>/primaryTouch",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PrimaryTouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6ff0643d-3ea2-408b-920a-3fdfa75b0958",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TouchPress",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f65f6c11-8628-4e1e-be52-14fe27051bca",
+                    "path": "<Touchscreen>/Press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TouchPress",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

@@ -1,0 +1,70 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\\u4FE1\u606F\u4EA4\u4E92\u8BBE\u8BA1\\\u5927\u4F5C\u4E1A\\\u8865\u5B50\u00B7\u89C2\u5FAE\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{4B1290C3-E55F-4518-65DA-305A87887006}|Assembly-CSharp.csproj|d:\\\u4FE1\u606F\u4EA4\u4E92\u8BBE\u8BA1\\\u5927\u4F5C\u4E1A\\\u8865\u5B50\u00B7\u89C2\u5FAE\\assets\\scripts\\core\\input\\inputmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4B1290C3-E55F-4518-65DA-305A87887006}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\core\\input\\inputmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4B1290C3-E55F-4518-65DA-305A87887006}|Assembly-CSharp.csproj|D:\\\u4FE1\u606F\u4EA4\u4E92\u8BBE\u8BA1\\\u5927\u4F5C\u4E1A\\\u8865\u5B50\u00B7\u89C2\u5FAE\\assets\\scripts\\core\\input\\testinput.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4B1290C3-E55F-4518-65DA-305A87887006}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\core\\input\\testinput.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4B1290C3-E55F-4518-65DA-305A87887006}|Assembly-CSharp.csproj|D:\\\u4FE1\u606F\u4EA4\u4E92\u8BBE\u8BA1\\\u5927\u4F5C\u4E1A\\\u8865\u5B50\u00B7\u89C2\u5FAE\\assets\\settings\\inputactions\\playercontrols.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4B1290C3-E55F-4518-65DA-305A87887006}|Assembly-CSharp.csproj|solutionrelative:assets\\settings\\inputactions\\playercontrols.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "PlayerControls.cs",
+              "DocumentMoniker": "D:\\\u4FE1\u606F\u4EA4\u4E92\u8BBE\u8BA1\\\u5927\u4F5C\u4E1A\\\u8865\u5B50\u00B7\u89C2\u5FAE\\Assets\\Settings\\InputActions\\PlayerControls.cs",
+              "RelativeDocumentMoniker": "Assets\\Settings\\InputActions\\PlayerControls.cs",
+              "ToolTip": "D:\\\u4FE1\u606F\u4EA4\u4E92\u8BBE\u8BA1\\\u5927\u4F5C\u4E1A\\\u8865\u5B50\u00B7\u89C2\u5FAE\\Assets\\Settings\\InputActions\\PlayerControls.cs",
+              "RelativeToolTip": "Assets\\Settings\\InputActions\\PlayerControls.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-08T10:01:29.496Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "TestInput.cs",
+              "DocumentMoniker": "D:\\\u4FE1\u606F\u4EA4\u4E92\u8BBE\u8BA1\\\u5927\u4F5C\u4E1A\\\u8865\u5B50\u00B7\u89C2\u5FAE\\Assets\\Scripts\\Core\\Input\\TestInput.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Core\\Input\\TestInput.cs",
+              "ToolTip": "D:\\\u4FE1\u606F\u4EA4\u4E92\u8BBE\u8BA1\\\u5927\u4F5C\u4E1A\\\u8865\u5B50\u00B7\u89C2\u5FAE\\Assets\\Scripts\\Core\\Input\\TestInput.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Core\\Input\\TestInput.cs",
+              "ViewState": "AgIAAHMAAAAAAAAAAAAmwH8AAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-08T05:50:47.139Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "InputManager.cs",
+              "DocumentMoniker": "D:\\\u4FE1\u606F\u4EA4\u4E92\u8BBE\u8BA1\\\u5927\u4F5C\u4E1A\\\u8865\u5B50\u00B7\u89C2\u5FAE\\Assets\\Scripts\\Core\\Input\\InputManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Core\\Input\\InputManager.cs",
+              "ToolTip": "D:\\\u4FE1\u606F\u4EA4\u4E92\u8BBE\u8BA1\\\u5927\u4F5C\u4E1A\\\u8865\u5B50\u00B7\u89C2\u5FAE\\Assets\\Scripts\\Core\\Input\\InputManager.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Core\\Input\\InputManager.cs",
+              "ViewState": "AgIAAM4AAAAAAAAAAAAmwEUBAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-08T05:42:11.205Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

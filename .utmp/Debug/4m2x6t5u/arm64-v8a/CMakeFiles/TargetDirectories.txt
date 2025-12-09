@@ -1,0 +1,5 @@
+D:/II/Final Work/buzi_guanwei/.utmp/Debug/4m2x6t5u/arm64-v8a/CMakeFiles/edit_cache.dir
+D:/II/Final Work/buzi_guanwei/.utmp/Debug/4m2x6t5u/arm64-v8a/CMakeFiles/rebuild_cache.dir
+D:/II/Final Work/buzi_guanwei/.utmp/Debug/4m2x6t5u/arm64-v8a/GameActivity/CMakeFiles/game.dir
+D:/II/Final Work/buzi_guanwei/.utmp/Debug/4m2x6t5u/arm64-v8a/GameActivity/CMakeFiles/edit_cache.dir
+D:/II/Final Work/buzi_guanwei/.utmp/Debug/4m2x6t5u/arm64-v8a/GameActivity/CMakeFiles/rebuild_cache.dir
