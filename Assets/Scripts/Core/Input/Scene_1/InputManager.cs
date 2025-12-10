@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -16,6 +17,46 @@ public class InputManager : MonoBehaviour
     public event Action<Vector2, int> OnTouchBegan;
     public event Action<Vector2, int> OnTouchMoved;
     public event Action<Vector2, int> OnTouchEnded;
+
+    [System.Serializable]
+    public struct FingerData
+    {
+        public int fingerId;
+        public Vector2 position;
+        public Vector2 startPosition;
+        public Vector2 deltaPosition;
+        public float touchTime;
+        public FingerRole role;
+        public bool isLongPress;
+        public bool isActive;
+    }
+
+    public enum FingerRole
+    {
+        None,
+        Guiding,    // 引导指 - 绘制金线
+        Operating,  // 操作指 - 钉固操作
+        Unassigned  // 未分配
+    }
+
+    [Header("双指交互设置")]
+    public float longPressDuration = 0.5f;      // 长按时间阈值
+    public float longPressMoveThreshold = 20f;  // 长按允许移动的像素阈值
+
+    // 手指追踪
+    private Dictionary<int, FingerData> activeFingers = new Dictionary<int, FingerData>();
+    private List<int> removedFingerIds = new List<int>(); // 用于安全移除
+
+    // 新的事件
+    public event Action<FingerData> OnFingerBegan;
+    public event Action<FingerData> OnFingerMoved;
+    public event Action<FingerData> OnFingerEnded;
+    public event Action<FingerData> OnFingerLongPress;
+    public event Action<Vector2> OnDeviceShake; // 设备摇晃检测（可选）
+
+    // 角色追踪
+    private int guidingFingerId = -1;
+    private int operatingFingerId = -1;
 
     // 公开属性
     public Vector2 CurrentTilt { get; private set; }
@@ -177,7 +218,7 @@ public class InputManager : MonoBehaviour
 #if UNITY_EDITOR
     void HandleEditorInput()
     {
-        // 1. 键盘模拟陀螺仪
+        // 1. 键盘模拟陀螺仪（保持不变）
         Vector2 inputFromAction = playerControls.GyroDrawing.DeviceTilt.ReadValue<Vector2>();
 
         if (inputFromAction != Vector2.zero)
@@ -186,7 +227,6 @@ public class InputManager : MonoBehaviour
             smoothedTilt = Vector2.Lerp(smoothedTilt, inputFromAction, tiltSmoothing);
             CurrentTilt = smoothedTilt;
             TryInvokeTiltChanged(CurrentTilt);
-            Debug.Log($"[编辑器] 键盘模拟输入: {inputFromAction}, 处理后: {CurrentTilt}");
         }
         else
         {
@@ -195,38 +235,59 @@ public class InputManager : MonoBehaviour
             TryInvokeTiltChanged(CurrentTilt);
         }
 
-        // 2. 鼠标模拟触摸（保持不变）
+        // 2. 鼠标模拟触摸（增强版）
+
+        // 鼠标左键模拟第一个手指
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
             Vector2 mousePos = Mouse.current.position.ReadValue();
-            TouchPosition = mousePos;
-            IsTouching = true;
-            touchStartPos = TouchPosition;
-            isDragging = false;
-
-            Debug.Log($"[编辑器] 鼠标按下，位置: {mousePos}");
-            OnTouchBegan?.Invoke(TouchPosition, 0);
+            HandleTouchBegan(0, mousePos); // 使用增强方法
         }
 
-        if (Mouse.current.leftButton.isPressed && IsTouching)
+        if (Mouse.current.leftButton.isPressed)
         {
             Vector2 mousePos = Mouse.current.position.ReadValue();
-            if (mousePos != TouchPosition)
+            if (activeFingers.ContainsKey(0))
             {
-                TouchPosition = mousePos;
-                OnTouchMoved?.Invoke(TouchPosition, 0);
+                Vector2 lastPos = activeFingers[0].position;
+                if (mousePos != lastPos)
+                {
+                    HandleTouchMoved(0, mousePos);
+                }
             }
         }
 
-        if (Mouse.current.leftButton.wasReleasedThisFrame && IsTouching)
+        if (Mouse.current.leftButton.wasReleasedThisFrame && activeFingers.ContainsKey(0))
         {
-            IsTouching = false;
-            isDragging = false;
-            Debug.Log($"[编辑器] 鼠标释放，位置: {TouchPosition}");
-            OnTouchEnded?.Invoke(TouchPosition, 0);
+            Vector2 mousePos = Mouse.current.position.ReadValue();
+            HandleTouchEnded(0, mousePos);
         }
 
-        UpdateTouchState();
+        // 鼠标右键模拟第二个手指（用于测试双指）
+        if (Mouse.current.rightButton.wasPressedThisFrame)
+        {
+            Vector2 mousePos = Mouse.current.position.ReadValue();
+            HandleTouchBegan(1, mousePos);
+        }
+
+        if (Mouse.current.rightButton.isPressed && activeFingers.ContainsKey(1))
+        {
+            Vector2 mousePos = Mouse.current.position.ReadValue();
+            Vector2 lastPos = activeFingers[1].position;
+            if (mousePos != lastPos)
+            {
+                HandleTouchMoved(1, mousePos);
+            }
+        }
+
+        if (Mouse.current.rightButton.wasReleasedThisFrame && activeFingers.ContainsKey(1))
+        {
+            Vector2 mousePos = Mouse.current.position.ReadValue();
+            HandleTouchEnded(1, mousePos);
+        }
+
+        // 检查长按
+        CheckLongPress();
     }
 #endif
 
@@ -235,59 +296,50 @@ public class InputManager : MonoBehaviour
     {
         if (cachedTouchscreen == null)
         {
-            // 每60帧警告一次，避免刷屏
-            if (Time.frameCount % 60 == 0) Debug.LogWarning("[真机] 触摸屏设备未找到，触摸输入不可用");
+            if (Time.frameCount % 60 == 0)
+                Debug.LogWarning("[真机] 触摸屏设备未找到");
             return;
         }
 
-        // 读取当前所有触摸点
-        var touches = cachedTouchscreen.touches;
-        if (touches.Count > 0)
+        // 清除已移除的手指
+        foreach (var fingerId in removedFingerIds)
         {
-            // 处理第一个触摸点（单点触控）
-            var primaryTouch = touches[0];
-            Vector2 touchPos = primaryTouch.position.ReadValue();
+            if (activeFingers.ContainsKey(fingerId))
+            {
+                activeFingers.Remove(fingerId);
+            }
+        }
+        removedFingerIds.Clear();
+
+        // 获取所有触摸点
+        var touches = cachedTouchscreen.touches;
+
+        // 处理每个触摸点
+        for (int i = 0; i < touches.Count; i++)
+        {
+            var touchControl = touches[i];
+            int touchId = touchControl.touchId.ReadValue();
+            Vector2 touchPos = touchControl.position.ReadValue();
 
             // 触摸开始
-            if (primaryTouch.press.wasPressedThisFrame)
+            if (touchControl.press.wasPressedThisFrame)
             {
-                TouchPosition = touchPos;
-                IsTouching = true;
-                touchStartPos = touchPos;
-                isDragging = false;
-
-                Debug.Log($"[真机] 触摸开始，位置: {touchPos}, 触摸点ID: {primaryTouch.touchId.ReadValue()}");
-                OnTouchBegan?.Invoke(touchPos, primaryTouch.touchId.ReadValue());
+                HandleTouchBegan(touchId, touchPos);
             }
             // 触摸移动
-            else if (primaryTouch.press.isPressed && IsTouching)
+            else if (touchControl.press.isPressed)
             {
-                if (touchPos != TouchPosition)
-                {
-                    TouchPosition = touchPos;
-                    OnTouchMoved?.Invoke(touchPos, primaryTouch.touchId.ReadValue());
-                    // 可选：减少移动日志频率，避免刷屏
-                    // if (Time.frameCount % 10 == 0) Debug.Log($"[真机] 触摸移动，位置: {touchPos}");
-                }
+                HandleTouchMoved(touchId, touchPos);
             }
             // 触摸结束
-            else if (primaryTouch.press.wasReleasedThisFrame && IsTouching)
+            else if (touchControl.press.wasReleasedThisFrame)
             {
-                IsTouching = false;
-                isDragging = false;
-                Debug.Log($"[真机] 触摸结束，位置: {touchPos}");
-                OnTouchEnded?.Invoke(touchPos, primaryTouch.touchId.ReadValue());
+                HandleTouchEnded(touchId, touchPos);
             }
+        }
 
-            UpdateTouchState(); // 更新拖拽状态
-        }
-        else if (IsTouching)
-        {
-            // 异常情况：IsTouching为true但没有触摸点，强制结束
-            IsTouching = false;
-            isDragging = false;
-            Debug.LogWarning("[真机] 触摸状态异常，已强制重置");
-        }
+        // 检查长按
+        CheckLongPress();
     }
 
     // 真机传感器数据更新（优化版）
@@ -428,12 +480,206 @@ public class InputManager : MonoBehaviour
 
     public string GetInputStatus()
     {
-        return $"陀螺仪: {(gyroEnabled ? "已启用" : "模拟模式")}, 触摸: {(IsTouching ? "进行中" : "空闲")}, 设备: {cachedTouchscreen?.name ?? "无"}";
+        string status = $"陀螺仪: {(gyroEnabled ? "已启用" : "模拟模式")}\n";
+        status += $"激活手指: {activeFingers.Count}\n";
+
+        foreach (var kvp in activeFingers)
+        {
+            var finger = kvp.Value;
+            status += $"  手指{finger.fingerId}: {finger.role} 位置: {finger.position}\n";
+        }
+
+        return status;
     }
 
     public void TriggerTestEvents()
     {
         OnTiltChanged?.Invoke(new Vector2(0.5f, 0.5f));
         OnTouchBegan?.Invoke(new Vector2(100, 200), 0);
+    }
+
+    void HandleTouchBegan(int fingerId, Vector2 position)
+    {
+        FingerData fingerData = new FingerData
+        {
+            fingerId = fingerId,
+            position = position,
+            startPosition = position,
+            deltaPosition = Vector2.zero,
+            touchTime = Time.time,
+            role = FingerRole.Unassigned,
+            isLongPress = false,
+            isActive = true
+        };
+
+        activeFingers[fingerId] = fingerData;
+
+        Debug.Log($"[触摸开始] 手指{fingerId}, 位置: {position}");
+        OnFingerBegan?.Invoke(fingerData);
+
+        // 同时触发旧事件以保持兼容性
+        OnTouchBegan?.Invoke(position, fingerId);
+    }
+
+    void HandleTouchMoved(int fingerId, Vector2 position)
+    {
+        if (!activeFingers.ContainsKey(fingerId)) return;
+
+        FingerData fingerData = activeFingers[fingerId];
+        fingerData.deltaPosition = position - fingerData.position;
+        fingerData.position = position;
+        activeFingers[fingerId] = fingerData;
+
+        // 检查是否移动超过长按阈值
+        float moveDistance = Vector2.Distance(position, fingerData.startPosition);
+        if (moveDistance > longPressMoveThreshold)
+        {
+            // 移动太大，取消长按资格
+            fingerData.isLongPress = false;
+            activeFingers[fingerId] = fingerData;
+        }
+
+        OnFingerMoved?.Invoke(fingerData);
+        OnTouchMoved?.Invoke(position, fingerId);
+    }
+
+    void HandleTouchEnded(int fingerId, Vector2 position)
+    {
+        if (!activeFingers.ContainsKey(fingerId)) return;
+
+        FingerData fingerData = activeFingers[fingerId];
+        fingerData.position = position;
+        fingerData.isActive = false;
+
+        // 移除前触发事件
+        OnFingerEnded?.Invoke(fingerData);
+        OnTouchEnded?.Invoke(position, fingerId);
+
+        Debug.Log($"[触摸结束] 手指{fingerId}, 持续时间: {Time.time - fingerData.touchTime:F2}秒");
+
+        // 清理角色分配
+        if (guidingFingerId == fingerId) guidingFingerId = -1;
+        if (operatingFingerId == fingerId) operatingFingerId = -1;
+
+        // 标记为待移除
+        removedFingerIds.Add(fingerId);
+    }
+
+    void CheckLongPress()
+    {
+        foreach (var kvp in activeFingers)
+        {
+            int fingerId = kvp.Key;
+            FingerData fingerData = kvp.Value;
+
+            if (!fingerData.isLongPress &&
+                Time.time - fingerData.touchTime >= longPressDuration)
+            {
+                // 检查移动距离
+                float moveDistance = Vector2.Distance(
+                    fingerData.position,
+                    fingerData.startPosition
+                );
+
+                if (moveDistance <= longPressMoveThreshold)
+                {
+                    fingerData.isLongPress = true;
+                    activeFingers[fingerId] = fingerData;
+
+                    Debug.Log($"[长按检测] 手指{fingerId}, 位置: {fingerData.position}");
+                    OnFingerLongPress?.Invoke(fingerData);
+                }
+            }
+        }
+    }
+
+    // 角色管理
+    public void AssignFingerRole(int fingerId, FingerRole role)
+    {
+        if (!activeFingers.ContainsKey(fingerId)) return;
+
+        FingerData fingerData = activeFingers[fingerId];
+        fingerData.role = role;
+        activeFingers[fingerId] = fingerData;
+
+        // 更新角色追踪
+        switch (role)
+        {
+            case FingerRole.Guiding:
+                guidingFingerId = fingerId;
+                break;
+            case FingerRole.Operating:
+                operatingFingerId = fingerId;
+                break;
+        }
+
+        Debug.Log($"[角色分配] 手指{fingerId} -> {role}");
+    }
+
+    public FingerRole GetFingerRole(int fingerId)
+    {
+        return activeFingers.ContainsKey(fingerId)
+            ? activeFingers[fingerId].role
+            : FingerRole.None;
+    }
+
+    public int GetGuidingFingerId() => guidingFingerId;
+    public int GetOperatingFingerId() => operatingFingerId;
+
+    public bool TryGetFingerData(int fingerId, out FingerData data)
+    {
+        return activeFingers.TryGetValue(fingerId, out data);
+    }
+
+    public List<FingerData> GetAllActiveFingers()
+    {
+        return activeFingers.Values.Where(f => f.isActive).ToList();
+    }
+
+    // 新增实用方法
+    public bool IsFingerLongPressing(int fingerId)
+    {
+        return activeFingers.ContainsKey(fingerId) &&
+               activeFingers[fingerId].isLongPress;
+    }
+
+    public float GetFingerPressDuration(int fingerId)
+    {
+        if (!activeFingers.ContainsKey(fingerId)) return 0f;
+        return Time.time - activeFingers[fingerId].touchTime;
+    }
+
+    public Vector2 GetFingerStartPosition(int fingerId)
+    {
+        return activeFingers.ContainsKey(fingerId)
+            ? activeFingers[fingerId].startPosition
+            : Vector2.zero;
+    }
+
+    // 检查是否在特定区域
+    public bool IsFingerInRect(int fingerId, Rect rect)
+    {
+        if (!activeFingers.ContainsKey(fingerId)) return false;
+        return rect.Contains(activeFingers[fingerId].position);
+    }
+
+    // 获取所有手指的平均位置（用于特殊效果）
+    public Vector2 GetAverageFingerPosition()
+    {
+        if (activeFingers.Count == 0) return Vector2.zero;
+
+        Vector2 sum = Vector2.zero;
+        int count = 0;
+
+        foreach (var finger in activeFingers.Values)
+        {
+            if (finger.isActive)
+            {
+                sum += finger.position;
+                count++;
+            }
+        }
+
+        return count > 0 ? sum / count : Vector2.zero;
     }
 }

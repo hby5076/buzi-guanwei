@@ -1,10 +1,19 @@
 # ninja log v5
+1749	1899	7869032366958038	D:/II/Final Work/buzi_guanwei/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/Debug/4m2x6t5u/obj/arm64-v8a/libgame.so	e3910457da2c838b
 26	1548	7869032363446852	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	58b40fb2054a3238
 38	1569	7869032363631148	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	bb9920d77369654d
+53	1748	7869032365435770	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	22980ab6d47cca25
 8	1571	7869032363641221	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	34c549e72664a929
-44	1573	7869032363672628	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	affb0955e65087f2
 14	1586	7869032363817107	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	17dd6892df6a2c70
+44	1573	7869032363672628	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	affb0955e65087f2
 20	1701	7869032364952295	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	6a0c1026fad2a13f
 1	1732	7869032365255075	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	bd891834e6cf8ccd
-53	1748	7869032365435770	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	22980ab6d47cca25
-1749	1899	7869032366958038	D:/II/Final Work/buzi_guanwei/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/Debug/4m2x6t5u/obj/arm64-v8a/libgame.so	e3910457da2c838b
+60	1656	7870401118405426	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	58b40fb2054a3238
+28	1659	7870401118455731	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	bb9920d77369654d
+37	1663	7870401118486006	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	34c549e72664a929
+44	1675	7870401118625824	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	affb0955e65087f2
+20	1694	7870401118819492	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	17dd6892df6a2c70
+52	1809	7870401119944790	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	6a0c1026fad2a13f
+10	1856	7870401120399105	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	bd891834e6cf8ccd
+67	1874	7870401120570901	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	22980ab6d47cca25
+1874	2081	7870401122663634	D:/II/Final Work/buzi_guanwei/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/Debug/4m2x6t5u/obj/arm64-v8a/libgame.so	e3910457da2c838b

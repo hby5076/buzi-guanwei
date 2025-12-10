@@ -3,8 +3,24 @@
   "WorkspaceRootPath": "D:\\II\\Final Work\\buzi_guanwei\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A5308C0B-B1FC-6E78-8ACE-2BE77DCC4A20}|Assembly-CSharp.csproj|d:\\ii\\final work\\buzi_guanwei\\assets\\scripts\\core\\input\\inputmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A5308C0B-B1FC-6E78-8ACE-2BE77DCC4A20}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\core\\input\\inputmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A5308C0B-B1FC-6E78-8ACE-2BE77DCC4A20}|Assembly-CSharp.csproj|d:\\ii\\final work\\buzi_guanwei\\assets\\scripts\\core\\input\\scene_1\\inputmanager_scene1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A5308C0B-B1FC-6E78-8ACE-2BE77DCC4A20}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\core\\input\\scene_1\\inputmanager_scene1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A5308C0B-B1FC-6E78-8ACE-2BE77DCC4A20}|Assembly-CSharp.csproj|D:\\II\\Final Work\\buzi_guanwei\\assets\\scripts\\core\\input\\scene_1\\inputtester_scene1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A5308C0B-B1FC-6E78-8ACE-2BE77DCC4A20}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\core\\input\\scene_1\\inputtester_scene1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A5308C0B-B1FC-6E78-8ACE-2BE77DCC4A20}|Assembly-CSharp.csproj|D:\\II\\Final Work\\buzi_guanwei\\assets\\inputactions_scene1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A5308C0B-B1FC-6E78-8ACE-2BE77DCC4A20}|Assembly-CSharp.csproj|solutionrelative:assets\\inputactions_scene1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A5308C0B-B1FC-6E78-8ACE-2BE77DCC4A20}|Assembly-CSharp.csproj|D:\\II\\Final Work\\buzi_guanwei\\assets\\scripts\\core\\state\\scene_1\\statemanager_scene1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A5308C0B-B1FC-6E78-8ACE-2BE77DCC4A20}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\core\\state\\scene_1\\statemanager_scene1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\II\\Final Work\\buzi_guanwei\\Assets\\Scripts\\Core\\Input\\Scene_1\\MiniTest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scripts\\Core\\Input\\Scene_1\\MiniTest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,20 +30,68 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "InputManager.cs",
-              "DocumentMoniker": "D:\\II\\Final Work\\buzi_guanwei\\Assets\\Scripts\\Core\\Input\\InputManager.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\Core\\Input\\InputManager.cs",
-              "ToolTip": "D:\\II\\Final Work\\buzi_guanwei\\Assets\\Scripts\\Core\\Input\\InputManager.cs",
-              "RelativeToolTip": "Assets\\Scripts\\Core\\Input\\InputManager.cs",
-              "ViewState": "AgIAAJYBAAAAAAAAAAAkwKcBAAAhAAAAAAAAAA==",
+              "DocumentIndex": 4,
+              "Title": "MiniTest.cs",
+              "DocumentMoniker": "D:\\II\\Final Work\\buzi_guanwei\\Assets\\Scripts\\Core\\Input\\Scene_1\\MiniTest.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Core\\Input\\Scene_1\\MiniTest.cs",
+              "ToolTip": "D:\\II\\Final Work\\buzi_guanwei\\Assets\\Scripts\\Core\\Input\\Scene_1\\MiniTest.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Core\\Input\\Scene_1\\MiniTest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T05:40:32.424Z",
+              "WhenOpened": "2025-12-10T02:00:07.037Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "InputTester_Scene1.cs",
+              "DocumentMoniker": "D:\\II\\Final Work\\buzi_guanwei\\Assets\\Scripts\\Core\\Input\\Scene_1\\InputTester_Scene1.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Core\\Input\\Scene_1\\InputTester_Scene1.cs",
+              "ToolTip": "D:\\II\\Final Work\\buzi_guanwei\\Assets\\Scripts\\Core\\Input\\Scene_1\\InputTester_Scene1.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Core\\Input\\Scene_1\\InputTester_Scene1.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAKQAAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-10T01:21:45.467Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "InputManager_Scene1.cs",
+              "DocumentMoniker": "D:\\II\\Final Work\\buzi_guanwei\\Assets\\Scripts\\Core\\Input\\Scene_1\\InputManager_Scene1.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Core\\Input\\Scene_1\\InputManager_Scene1.cs",
+              "ToolTip": "D:\\II\\Final Work\\buzi_guanwei\\Assets\\Scripts\\Core\\Input\\Scene_1\\InputManager_Scene1.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Core\\Input\\Scene_1\\InputManager_Scene1.cs",
+              "ViewState": "AgIAAPQAAAAAAAAAAAAAAAABAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-09T10:12:48.96Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "InputActions_Scene1.cs",
+              "DocumentMoniker": "D:\\II\\Final Work\\buzi_guanwei\\Assets\\InputActions_Scene1.cs",
+              "RelativeDocumentMoniker": "Assets\\InputActions_Scene1.cs",
+              "ToolTip": "D:\\II\\Final Work\\buzi_guanwei\\Assets\\InputActions_Scene1.cs",
+              "RelativeToolTip": "Assets\\InputActions_Scene1.cs",
+              "ViewState": "AgIAAB4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-10T01:10:17.933Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "StateManager_Scene1.cs",
+              "DocumentMoniker": "D:\\II\\Final Work\\buzi_guanwei\\Assets\\Scripts\\Core\\State\\Scene_1\\StateManager_Scene1.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Core\\State\\Scene_1\\StateManager_Scene1.cs",
+              "ToolTip": "D:\\II\\Final Work\\buzi_guanwei\\Assets\\Scripts\\Core\\State\\Scene_1\\StateManager_Scene1.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Core\\State\\Scene_1\\StateManager_Scene1.cs",
+              "ViewState": "AgIAABIAAAAAAAAAAAAYwIMAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-10T00:53:57.751Z"
             }
           ]
         }
