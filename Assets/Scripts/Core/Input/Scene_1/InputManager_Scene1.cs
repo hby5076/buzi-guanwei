@@ -1,28 +1,33 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+#if UNITY_ANDROID
+using UnityEngine.Android;
+#endif
 
 public class InputManager_Scene1 : MonoBehaviour
 {
     public static InputManager_Scene1 Instance { get; private set; }
     // ---------------------------------------------------------
 
-    [Header("模拟设置 (仅编辑器)")]
-    [SerializeField] private float _keyboardTiltSensitivity = 3.0f;
-    [SerializeField] private float _pinchKeyboardSensitivity = 5.0f;
-
     // 公共事件
+    public event Action<Vector2> OnPrimaryTouchStarted;
     public event Action<Vector2> OnPrimaryTouchMoved;
+    public event Action<Vector2> OnPrimaryTouchEnded;
     public event Action<Vector2> OnSecondaryTapPerformed;
     public event Action<Vector3> OnDeviceTiltChanged;
     public event Action<float> OnPinchDeltaChanged;
+
+    // 辅助方法：获取事件订阅者数量（用于调试）
+    public int GetOnPrimaryTouchStartedSubscriberCount() => OnPrimaryTouchStarted?.GetInvocationList()?.Length ?? 0;
+    public int GetOnPrimaryTouchEndedSubscriberCount() => OnPrimaryTouchEnded?.GetInvocationList()?.Length ?? 0;
 
     // 内部状态
     private InputActions_Scene1 _actions; 
     private Vector3 _currentTiltData;
     private Vector2 _lastPrimaryTouchPos;
-    private bool _isUsingSimulatedInput = false;
     private float _lastPinchDistance = 0;
     private enum PinchState { None, SingleTouch, Pinching }
     private PinchState _currentPinchState = PinchState.None;
@@ -41,46 +46,19 @@ public class InputManager_Scene1 : MonoBehaviour
         // 1. 初始化Input Actions
         _actions = new InputActions_Scene1();
         _actions.Enable();
-        Debug.Log("[InputManager] 输入资产初始化成功。");
+            // 输入资产初始化成功
 
         // 2. 绑定输入事件回调
         SetupInputCallbacks();
 
-        // 3. 检测初始输入环境
-        CheckInputEnvironment();
-        Debug.Log($"[InputManager] 启动环境：模拟输入 = {_isUsingSimulatedInput}");
-
-        // 4. 检测陀螺仪是否被启用
-        if (UnityEngine.InputSystem.Gyroscope.current != null)
-        {
-            // 关键：强制启用陀螺仪设备
-            InputSystem.EnableDevice(UnityEngine.InputSystem.Gyroscope.current);
-            Debug.Log("[InputManager] 已启用陀螺仪设备");
-
-            // 同时检查Input Action的绑定状态
-            if (!_actions.Pingjin.DeviceTilt.enabled)
-            {
-                Debug.LogWarning("[InputManager] 陀螺仪Action未启用，尝试启用");
-                _actions.Pingjin.DeviceTilt.Enable();
-            }
-        }
-        else
-        {
-            Debug.LogError("[InputManager] 未检测到陀螺仪设备！请确认设备支持陀螺仪");
-        }
+        // 3. 检测并初始化陀螺仪
+        InitializeGyroscope();
     }
 
     void Update()
     {
-        // 无论何种环境，都尝试更新传感器数据
+        // 更新传感器数据
         UpdateSensorData();
-
-        // 模拟环境下，持续处理模拟输入（如键盘模拟陀螺仪)
-        if (_isUsingSimulatedInput)
-        {    
-            HandleSimulatedInputs();
-        }
-        
     }
 
     private void UpdateSensorData()
@@ -102,48 +80,68 @@ public class InputManager_Scene1 : MonoBehaviour
 
         Vector3 currentTilt = Vector3.zero;
 
-        // 方法1：检查直接访问陀螺仪设备
-        if (UnityEngine.InputSystem.Gyroscope.current != null)
+        // 检查并启用陀螺仪设备
+        var gyro = UnityEngine.InputSystem.Gyroscope.current;
+        if (gyro != null)
         {
-            try
+            // 如果陀螺仪未启用，尝试启用它
+            if (!gyro.enabled)
             {
-                currentTilt = UnityEngine.InputSystem.Gyroscope.current.angularVelocity.ReadValue();
+                try
+                {
+                    InputSystem.EnableDevice(gyro);
+                    // 已手动启用陀螺仪设备
+                    
+                    // 给设备一些时间来初始化
+                    if (Time.frameCount % 60 == 0) // 每秒检查一次
+                    {
+                        // 等待陀螺仪设备初始化
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    // 启用设备失败 - 静默处理
+                    return;
+                }
             }
-            catch (System.Exception e)
+
+            // 读取陀螺仪数据
+            if (gyro.enabled)
             {
-                Debug.LogError($"[陀螺仪] 直接读取失败: {e.Message}");
+                try
+                {
+                    currentTilt = gyro.angularVelocity.ReadValue();
+                    
+                    // 只在有实际数据时才输出日志，避免刷屏
+                    if (Time.frameCount % 120 == 0 && currentTilt != Vector3.zero) // 每2秒输出一次
+                    {
+                        // 设备读取成功
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    // 设备读取失败 - 静默处理
+                }
+            }
+            else
+            {
+                // 陀螺仪存在但无法启用
+                if (Time.frameCount % 180 == 0) // 每3秒提醒一次
+                {
+                    // 设备存在但无法启用 - 静默处理
+                }
             }
         }
         else
         {
-            Debug.LogWarning($"[陀螺仪] 未检测到陀螺仪设备");
-        }
-
-        // 方法2：通过Input Action读取
-        if (_actions.Pingjin.DeviceTilt.enabled)
-        {
-            // 检查当前激活的控制设备
-            var activeControl = _actions.Pingjin.DeviceTilt.activeControl;
-            if (activeControl != null)
+            // 完全没有陀螺仪设备
+            if (Time.frameCount % 180 == 0) // 每3秒提醒一次
             {
-                Debug.Log($"[陀螺仪] 激活的控制设备: {activeControl.device.name}");
-            }
-
-            try
-            {
-                currentTilt = _actions.Pingjin.DeviceTilt.ReadValue<Vector3>();
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError($"[陀螺仪] Action读取失败: {e.Message}");
+                // 设备不支持陀螺仪或未正确配置 - 静默处理
             }
         }
-        else
-        {
-            Debug.LogWarning($"[陀螺仪] DeviceTilt Action未启用");
-        }
 
-        // 发布数据（如果数据有变化）
+        // 数据处理
         float sensitivity = 50f;
         currentTilt *= sensitivity;
 
@@ -154,7 +152,12 @@ public class InputManager_Scene1 : MonoBehaviour
         if (Mathf.Abs(currentTilt.z) < deadZone) currentTilt.z = 0;
 
         _currentTiltData = currentTilt;
-        OnDeviceTiltChanged?.Invoke(_currentTiltData);
+        
+        // 只有在有有效数据时才发布事件
+        if (_currentTiltData != Vector3.zero)
+        {
+            OnDeviceTiltChanged?.Invoke(_currentTiltData);
+        }
     }
 
     // 处理真实触摸屏的双指捏合手势
@@ -182,7 +185,7 @@ public class InputManager_Scene1 : MonoBehaviour
         // 2. 调试日志 (限制输出频率，避免刷屏)
         if (Time.frameCount % 30 == 0)
         {
-            Debug.Log($"[诊断] 活跃触摸点: {activeTouchCount}， 当前状态: {_currentPinchState}");
+            // 活跃触摸点状态更新
         }
 
         // 3. 核心：修复后的状态机逻辑
@@ -191,7 +194,7 @@ public class InputManager_Scene1 : MonoBehaviour
             case PinchState.None:
                 if (activeTouchCount == 1)
                 {
-                    Debug.Log($"[状态机] 单指按下 -> 进入 SingleTouch");
+                    // 单指按下状态
                     _currentPinchState = PinchState.SingleTouch;
                     _lastTouchCount = activeTouchCount;
                 }
@@ -202,13 +205,13 @@ public class InputManager_Scene1 : MonoBehaviour
             case PinchState.SingleTouch:
                 if (activeTouchCount == 2 && _lastTouchCount == 1)
                 {
-                    Debug.Log($"[状态机] 检测到第二指 -> 进入 Pinching，初始化距离");
+                    // 检测到第二指，进入捏合状态
                     _currentPinchState = PinchState.Pinching;
                     _lastPinchDistance = CalculateTouchDistance(activeTouchList); // 初始化
                 }
                 else if (activeTouchCount == 0)
                 {
-                    Debug.Log($"[状态机] 手指全部抬起 -> 回到 None");
+                    // 手指全部抬起，回到无触摸状态
                     _currentPinchState = PinchState.None;
                     _lastPinchDistance = 0f;
                 }
@@ -238,7 +241,7 @@ public class InputManager_Scene1 : MonoBehaviour
                 }
                 else if (activeTouchCount < 2) // 如果变成单指或全抬起
                 {
-                    Debug.Log($"[状态机] 捏合结束 -> 回到 SingleTouch 或 None");
+                    // 捏合结束，回到单指或无触摸状态
                     _currentPinchState = (activeTouchCount == 1) ? PinchState.SingleTouch : PinchState.None;
                     _lastPinchDistance = 0f;
                     _lastTouchCount = activeTouchCount;
@@ -263,12 +266,20 @@ public class InputManager_Scene1 : MonoBehaviour
 
         _lastPinchDistance = CalculateTouchDistance(touches);
     }
+
     /// <summary>
     /// 将输入动作绑定到具体的事件处理函数
     /// </summary>
     private void SetupInputCallbacks()
     {
         if (_actions == null) return;
+
+        // 平金：主触摸开始
+        _actions.Pingjin.PrimaryTouch.started += ctx =>
+        {
+            _lastPrimaryTouchPos = ctx.ReadValue<Vector2>();
+            OnPrimaryTouchStarted?.Invoke(_lastPrimaryTouchPos);
+        };
 
         // 平金：主触摸移动
         _actions.Pingjin.PrimaryTouch.performed += ctx =>
@@ -277,66 +288,27 @@ public class InputManager_Scene1 : MonoBehaviour
             OnPrimaryTouchMoved?.Invoke(_lastPrimaryTouchPos);
         };
 
+        // 平金：主触摸结束 - 修复：使用PrimaryTouchContact而不是PrimaryTouch
+        _actions.Pingjin.PrimaryTouchContact.canceled += ctx =>
+        {
+            Debug.Log($"[InputManager] ========== PrimaryTouchContact.canceled事件触发 ==========");
+            Debug.Log($"[InputManager] 触摸结束时间: {System.DateTime.Now:HH:mm:ss.fff}");
+            Debug.Log($"[InputManager] 最后触摸位置: ({_lastPrimaryTouchPos.x:F1}, {_lastPrimaryTouchPos.y:F1})");
+            Debug.Log($"[InputManager] OnPrimaryTouchEnded订阅者数量: {GetOnPrimaryTouchEndedSubscriberCount()}");
+            
+            OnPrimaryTouchEnded?.Invoke(_lastPrimaryTouchPos);
+            
+            Debug.Log($"[InputManager] OnPrimaryTouchEnded事件调用完成");
+        };
+
         // 平金：次触摸点击（钉固）
         _actions.Pingjin.SecondaryTap.performed += ctx =>
         {
-            // 决定点击坐标的来源
-            Vector2 tapPos = _isUsingSimulatedInput ? _lastPrimaryTouchPos : _actions.Pingjin.SecondaryTouch.ReadValue<Vector2>();
+            Vector2 tapPos = _actions.Pingjin.SecondaryTouch.ReadValue<Vector2>();
             OnSecondaryTapPerformed?.Invoke(tapPos);
         };
 
         // 其他Action的回调可以在此按需添加...
-    }
-
-    /// <summary>
-    /// 检测当前是使用真机输入还是编辑器模拟输入
-    /// </summary>
-    private void CheckInputEnvironment()
-    {
-#if UNITY_EDITOR
-        // 在编辑器下，如果有鼠标或键盘，优先认为使用模拟
-        _isUsingSimulatedInput = (Mouse.current != null || Keyboard.current != null);
-        Debug.Log($"[InputManager] 编辑器模式，使用模拟输入: {_isUsingSimulatedInput}");
-#else
-        // 在真机上，如果有触摸屏，则优先使用真实触摸
-        _isUsingSimulatedInput = false; // 明确关闭模拟
-        Debug.Log($"[InputManager] 真机模式，使用模拟输入: {_isUsingSimulatedInput}");
-#endif
-    }
-
-    /// <summary>
-    /// 处理所有通过键盘等设备模拟的输入
-    /// </summary>
-    private void HandleSimulatedInputs()
-    {
-        if (!_isUsingSimulatedInput) return;
-
-#if UNITY_EDITOR
-        // 模拟陀螺仪
-        if (_actions.Pingjin.enabled)
-        {
-            Vector3 keyboardTilt = Vector3.zero;
-            // 注意：这里假设你的DeviceTilt Action已按之前指导，用“3D Vector Composite”绑定了WASDQE键
-            if (_actions.Pingjin.DeviceTilt.activeControl?.device is Keyboard)
-            {
-                keyboardTilt = _actions.Pingjin.DeviceTilt.ReadValue<Vector3>();
-                _currentTiltData = keyboardTilt * _keyboardTiltSensitivity;
-                OnDeviceTiltChanged?.Invoke(_currentTiltData);
-            }
-        }
-
-        // 模拟双指捏合 
-        if (_actions.Duiling.enabled && Keyboard.current != null)
-        {
-            float pinchDelta = 0f;
-            if (Keyboard.current.eKey.isPressed) pinchDelta += 1f; // E键放大
-            if (Keyboard.current.qKey.isPressed) pinchDelta -= 1f; // Q键缩小
-            if (Mathf.Abs(pinchDelta) > 0.01f)
-            {
-                OnPinchDeltaChanged?.Invoke(pinchDelta * _pinchKeyboardSensitivity * Time.deltaTime);
-            }
-        }
-#endif
     }
 
     /// <summary>
@@ -358,16 +330,16 @@ public class InputManager_Scene1 : MonoBehaviour
             case StateManager_Scene1.AppState.Pingjin_Inspection:
             case StateManager_Scene1.AppState.Pingjin_Repair:
                 _actions.Pingjin.Enable();
-                Debug.Log($"[InputManager] 切换到：平金输入模式");
+                // 切换到平金输入模式
                 break;
             case StateManager_Scene1.AppState.Duiling_Paste:
             case StateManager_Scene1.AppState.Duiling_Stretch:
                 _actions.Duiling.Enable(); // 【关键修正】这里也要改
-                Debug.Log($"[InputManager] 切换到：堆绫输入模式");
+                // 切换到堆绫输入模式
                 break;
             case StateManager_Scene1.AppState.Panjin_Draw:
                 _actions.Panjin.Enable();
-                Debug.Log($"[InputManager] 切换到：盘金输入模式");
+                // 切换到盘金输入模式
                 break;
         }
     }
@@ -378,21 +350,13 @@ public class InputManager_Scene1 : MonoBehaviour
     public Vector3 GetCurrentTiltData() => _currentTiltData;
 
     /// <summary>
-    /// 获取第二触摸点位置（统一接口，考虑了模拟输入）
+    /// 获取第二触摸点位置（移动端专用）
     /// </summary>
     public Vector2 GetSecondaryTouchPosition()
     {
-        if (_isUsingSimulatedInput)
+        if (_actions != null && _actions.Pingjin.enabled)
         {
-            // 模拟环境下，按住Alt时鼠标位置作为第二指
-            if (Keyboard.current != null && Keyboard.current.altKey.isPressed && Mouse.current != null)
-            {
-                return Mouse.current.position.ReadValue();
-            }
-        }
-        else if (_actions != null && _actions.Pingjin.enabled)
-        {
-            // 真实环境下，直接从Action读取
+            // 从Action读取触摸数据
             return _actions.Pingjin.SecondaryTouch.ReadValue<Vector2>();
         }
         return Vector2.zero;
@@ -403,14 +367,190 @@ public class InputManager_Scene1 : MonoBehaviour
     /// </summary>
     public string GetInputEnvironmentInfo()
     {
-        string info = $"使用模拟输入: {_isUsingSimulatedInput}\n活跃设备: ";
+        string info = $"移动端输入模式\n活跃设备: ";
         if (Touchscreen.current != null) info += "[触摸屏] ";
-        if (Mouse.current != null) info += "[鼠标] ";
-        if (Keyboard.current != null) info += "[键盘] ";
         if (UnityEngine.InputSystem.Gyroscope.current != null) info += "[陀螺仪] ";
         return info;
     }
 
+    /// <summary>
+    /// 测试事件触发（仅用于调试和测试）
+    /// </summary>
+    public void TriggerTestEvents()
+    {
+        // 开始触发测试事件
+        
+        // 测试设备倾斜事件
+        Vector3 testTilt = new Vector3(0.1f, 0.1f, 0f);
+        OnDeviceTiltChanged?.Invoke(testTilt);
+        // 触发设备倾斜测试事件
+        
+        // 测试主触摸移动事件
+        Vector2 testTouchPos = new Vector2(100f, 200f);
+        OnPrimaryTouchMoved?.Invoke(testTouchPos);
+        // 触发主触摸移动测试事件
+        
+        // 测试次要点击事件
+        Vector2 testTapPos = new Vector2(150f, 250f);
+        OnSecondaryTapPerformed?.Invoke(testTapPos);
+        // 触发次要点击测试事件
+        
+        // 测试事件触发完成
+    }
+
     void OnEnable() => _actions?.Enable();
     void OnDisable() => _actions?.Disable();
+
+    /// <summary>
+    /// 初始化陀螺仪设备
+    /// </summary>
+    private void InitializeGyroscope()
+    {
+        // 开始初始化陀螺仪设备
+        
+        // 首先检查权限（仅Android需要）
+        if (!CheckGyroscopePermissions())
+        {
+            // 权限检查失败，陀螺仪功能无法使用
+            return;
+        }
+        
+        var gyro = UnityEngine.InputSystem.Gyroscope.current;
+        if (gyro != null)
+        {
+            try
+            {
+                // 强制启用陀螺仪设备
+                if (!gyro.enabled)
+                {
+                    InputSystem.EnableDevice(gyro);
+                    // 已成功启用陀螺仪设备
+                }
+                else
+                {
+                    // 陀螺仪设备已经启用
+                }
+
+                // 检查Input Action的绑定状态
+                if (_actions != null)
+                {
+                    if (!_actions.Pingjin.DeviceTilt.enabled)
+                    {
+                        _actions.Pingjin.DeviceTilt.Enable();
+                        // 已启用陀螺仪Action
+                    }
+                }
+
+                // 验证陀螺仪是否真正可用
+                StartCoroutine(VerifyGyroscopeAfterDelay());
+            }
+            catch (System.Exception e)
+            {
+                // 初始化失败 - 静默处理
+            }
+        }
+        else
+        {
+            // 设备不支持陀螺仪功能 - 静默处理
+            
+            // 在Android设备上，提供额外的诊断信息
+            #if UNITY_ANDROID
+            // Android设备提示信息已移除
+            #endif
+        }
+    }
+
+    /// <summary>
+    /// 延迟验证陀螺仪功能
+    /// </summary>
+    private System.Collections.IEnumerator VerifyGyroscopeAfterDelay()
+    {
+        // 等待1秒让陀螺仪完全初始化
+        yield return new WaitForSeconds(1.0f);
+        
+        var gyro = UnityEngine.InputSystem.Gyroscope.current;
+        if (gyro != null && gyro.enabled)
+        {
+            try
+            {
+                // 尝试读取一次数据来验证功能
+                Vector3 testReading = gyro.angularVelocity.ReadValue();
+                // 验证成功
+                
+                if (testReading == Vector3.zero)
+                {
+                    // 设备已启用但当前读数为零，正常状态
+                }
+            }
+            catch (System.Exception e)
+            {
+                // 验证失败 - 静默处理
+            }
+        }
+        else
+        {
+            // 验证失败：设备仍然不可用 - 静默处理
+        }
+    }
+
+    /// <summary>
+    /// 检查陀螺仪权限（仅Android平台需要）
+    /// </summary>
+    /// <returns>是否有权限访问陀螺仪</returns>
+    private bool CheckGyroscopePermissions()
+    {
+        #if UNITY_ANDROID
+        // Android平台需要检查权限
+        // 检查Android设备权限
+        
+        // 检查是否有陀螺仪硬件支持
+        if (!SystemInfo.supportsGyroscope)
+        {
+            // 设备不支持陀螺仪硬件 - 静默处理
+            return false;
+        }
+        
+        // 检查基本权限（虽然陀螺仪通常不需要特殊权限，但某些设备可能需要）
+        // 注意：Unity中陀螺仪通常不需要运行时权限，但我们可以检查一些相关权限
+        if (!Permission.HasUserAuthorizedPermission("android.permission.WAKE_LOCK"))
+        {
+            // WAKE_LOCK权限未授权，可能影响陀螺仪性能 - 静默处理
+            // 尝试请求权限
+            Permission.RequestUserPermission("android.permission.WAKE_LOCK");
+        }
+        
+        // 检查设备是否处于允许传感器的状态
+        try
+        {
+            // 尝试访问陀螺仪来验证权限
+            var gyro = UnityEngine.InputSystem.Gyroscope.current;
+            if (gyro == null)
+            {
+                // 无法获取陀螺仪设备，可能是权限问题 - 静默处理
+                return false;
+            }
+            
+            // 权限检查通过
+            return true;
+        }
+        catch (System.Exception e)
+        {
+            // 权限检查异常 - 静默处理
+            return false;
+        }
+        
+        #else
+        // 非Android平台通常不需要特殊权限检查
+        // 非Android平台，跳过权限检查
+        
+        // 仍然检查硬件支持
+        if (!SystemInfo.supportsGyroscope)
+        {
+            // 设备不支持陀螺仪硬件 - 静默处理
+            return false;
+        }
+        
+        return true;
+        #endif
+    }
 }
