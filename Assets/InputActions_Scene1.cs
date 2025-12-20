@@ -105,7 +105,7 @@ public partial class @InputActions_Scene1: IInputActionCollection2, IDisposable
                     ""name"": ""Pinch"",
                     ""type"": ""Value"",
                     ""id"": ""869b5f15-2643-44e3-803f-a88d0a65774f"",
-                    ""expectedControlType"": ""Vector2"",
+                    ""expectedControlType"": ""Delta"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -118,6 +118,24 @@ public partial class @InputActions_Scene1: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": ""Tap(duration=0.2)"",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""PrimaryTouch"",
+                    ""type"": ""Value"",
+                    ""id"": ""04384668-487a-4c3d-9ac7-48c721106984"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""SecondTouch"",
+                    ""type"": ""Value"",
+                    ""id"": ""600aa101-df68-48a9-8592-e849450903d9"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -134,83 +152,6 @@ public partial class @InputActions_Scene1: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""9e55a523-0f3f-4d8d-95de-7e8daf10942c"",
-                    ""path"": ""<Mouse>/position"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Drag"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""cc265387-56db-476f-a839-ad601397b38b"",
-                    ""path"": ""<Touchscreen>/Secondary2DMotion"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Pinch"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""2D Vector"",
-                    ""id"": ""6dc22dba-753d-4b0c-9acc-76972fe032c3"",
-                    ""path"": ""2DVector"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Pinch"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""up"",
-                    ""id"": ""dd9ec596-1592-4f82-a8c1-3e88ee35622f"",
-                    ""path"": ""<Keyboard>/q"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Pinch"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""down"",
-                    ""id"": ""147f8bb6-be9f-477c-8023-b9433d1cefbb"",
-                    ""path"": ""<Keyboard>/e"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Pinch"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""left"",
-                    ""id"": ""18da7783-c657-46fa-9cd2-113f8761999d"",
-                    ""path"": """",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Pinch"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""right"",
-                    ""id"": ""93bf3b3e-88b7-467e-806e-7d6279ae16d4"",
-                    ""path"": """",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Pinch"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": """",
                     ""id"": ""0ec81cf5-9520-45c3-9e48-46f30e20b5c6"",
                     ""path"": ""<Touchscreen>/primaryTouch/tap"",
                     ""interactions"": """",
@@ -221,37 +162,37 @@ public partial class @InputActions_Scene1: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""One Modifier"",
-                    ""id"": ""cbca08f5-2c9c-49d1-8580-9351e33752a1"",
-                    ""path"": ""OneModifier(overrideModifiersNeedToBePressedFirst=true,modifiersOrder=1)"",
+                    ""name"": """",
+                    ""id"": ""a44fea01-9fb8-416d-8c79-37a51fef3dbc"",
+                    ""path"": ""<Touchscreen>/primaryTouch/position"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Tap"",
-                    ""isComposite"": true,
+                    ""action"": ""PrimaryTouch"",
+                    ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""modifier"",
-                    ""id"": ""0f0540ea-135a-4374-8228-ad496279a9ca"",
-                    ""path"": ""<Keyboard>/ctrl"",
+                    ""name"": """",
+                    ""id"": ""e732e06f-4ae9-4364-bdef-b0a22bc783dc"",
+                    ""path"": ""<Touchscreen>/touch0/position"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Tap"",
+                    ""action"": ""Pinch"",
                     ""isComposite"": false,
-                    ""isPartOfComposite"": true
+                    ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""binding"",
-                    ""id"": ""ce103764-4ebd-4106-ab67-a9c012a0a493"",
-                    ""path"": ""<Mouse>/leftButton"",
+                    ""name"": """",
+                    ""id"": ""8cbbd9c5-327e-4535-a8be-fc4f0f26f6e6"",
+                    ""path"": ""<Touchscreen>/touch1/position"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Tap"",
+                    ""action"": ""SecondTouch"",
                     ""isComposite"": false,
-                    ""isPartOfComposite"": true
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -319,30 +260,8 @@ public partial class @InputActions_Scene1: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""3622a174-0f5a-40fa-9ea5-177d5021a784"",
-                    ""path"": ""<Mouse>/position"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""PrimaryTouch"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""c5d0b349-023a-418d-a976-667066c02369"",
                     ""path"": ""<Touchscreen>/primaryTouch/press"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""PrimaryTouchContact"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""ba22a39f-7ddb-4030-a133-f1ac7eeafc1c"",
-                    ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -362,53 +281,9 @@ public partial class @InputActions_Scene1: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""One Modifier"",
-                    ""id"": ""bcac89f7-fabd-419e-b5df-b7586bc70ae1"",
-                    ""path"": ""OneModifier(overrideModifiersNeedToBePressedFirst=true,modifiersOrder=1)"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SecondaryTouch"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""modifier"",
-                    ""id"": ""0f8db6a5-36ba-4c82-953e-be9751b4540e"",
-                    ""path"": ""<Keyboard>/alt"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SecondaryTouch"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""binding"",
-                    ""id"": ""0d7bee92-13f9-4b5c-a2ee-af0fd50585c0"",
-                    ""path"": ""<Mouse>/position"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SecondaryTouch"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
                     ""name"": """",
                     ""id"": ""c60081a6-fd16-4f2e-81f8-32e220be47b0"",
                     ""path"": ""<Touchscreen>/touch1/press"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SecondaryTap"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""9c21e5bb-26ae-4e0d-b77c-bb03bf5b7dc7"",
-                    ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -426,83 +301,6 @@ public partial class @InputActions_Scene1: IInputActionCollection2, IDisposable
                     ""action"": ""DeviceTilt"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""3D Vector"",
-                    ""id"": ""fc5e4fd0-39cd-48fc-be80-2780fb2b970a"",
-                    ""path"": ""3DVector"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""DeviceTilt"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""up"",
-                    ""id"": ""f2083f9b-fbca-4e83-aee8-06b60f2301b8"",
-                    ""path"": ""<Keyboard>/w"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""DeviceTilt"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""down"",
-                    ""id"": ""d58b91f5-2463-432a-a797-71790b2c2ef9"",
-                    ""path"": ""<Keyboard>/s"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""DeviceTilt"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""left"",
-                    ""id"": ""8b959d72-0a8a-4900-b543-8e8be6041c3c"",
-                    ""path"": ""<Keyboard>/a"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""DeviceTilt"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""right"",
-                    ""id"": ""631b4203-75e5-41aa-b5fc-d047d8488479"",
-                    ""path"": ""<Keyboard>/d"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""DeviceTilt"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""forward"",
-                    ""id"": ""ca5d0954-a35f-470a-b3c4-ba109c500705"",
-                    ""path"": ""<Keyboard>/q"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""DeviceTilt"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""backward"",
-                    ""id"": ""0e768581-35fb-4357-907c-fa7c58b96894"",
-                    ""path"": ""<Keyboard>/e"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""DeviceTilt"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -543,17 +341,6 @@ public partial class @InputActions_Scene1: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""f8cab657-4f7b-426e-8fdd-54ed7950e66f"",
-                    ""path"": ""<Mouse>/position"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""NeedlePosition"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""bd7efdd9-a719-4e46-af65-4e32f5bed440"",
                     ""path"": ""<Touchscreen>/primaryTouch/press\t"",
                     ""interactions"": """",
@@ -573,6 +360,8 @@ public partial class @InputActions_Scene1: IInputActionCollection2, IDisposable
         m_Duiling_Drag = m_Duiling.FindAction("Drag", throwIfNotFound: true);
         m_Duiling_Pinch = m_Duiling.FindAction("Pinch", throwIfNotFound: true);
         m_Duiling_Tap = m_Duiling.FindAction("Tap", throwIfNotFound: true);
+        m_Duiling_PrimaryTouch = m_Duiling.FindAction("PrimaryTouch", throwIfNotFound: true);
+        m_Duiling_SecondTouch = m_Duiling.FindAction("SecondTouch", throwIfNotFound: true);
         // Pingjin
         m_Pingjin = asset.FindActionMap("Pingjin", throwIfNotFound: true);
         m_Pingjin_PrimaryTouch = m_Pingjin.FindAction("PrimaryTouch", throwIfNotFound: true);
@@ -669,6 +458,8 @@ public partial class @InputActions_Scene1: IInputActionCollection2, IDisposable
     private readonly InputAction m_Duiling_Drag;
     private readonly InputAction m_Duiling_Pinch;
     private readonly InputAction m_Duiling_Tap;
+    private readonly InputAction m_Duiling_PrimaryTouch;
+    private readonly InputAction m_Duiling_SecondTouch;
     /// <summary>
     /// Provides access to input actions defined in input action map "Duiling".
     /// </summary>
@@ -692,6 +483,14 @@ public partial class @InputActions_Scene1: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Duiling/Tap".
         /// </summary>
         public InputAction @Tap => m_Wrapper.m_Duiling_Tap;
+        /// <summary>
+        /// Provides access to the underlying input action "Duiling/PrimaryTouch".
+        /// </summary>
+        public InputAction @PrimaryTouch => m_Wrapper.m_Duiling_PrimaryTouch;
+        /// <summary>
+        /// Provides access to the underlying input action "Duiling/SecondTouch".
+        /// </summary>
+        public InputAction @SecondTouch => m_Wrapper.m_Duiling_SecondTouch;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -727,6 +526,12 @@ public partial class @InputActions_Scene1: IInputActionCollection2, IDisposable
             @Tap.started += instance.OnTap;
             @Tap.performed += instance.OnTap;
             @Tap.canceled += instance.OnTap;
+            @PrimaryTouch.started += instance.OnPrimaryTouch;
+            @PrimaryTouch.performed += instance.OnPrimaryTouch;
+            @PrimaryTouch.canceled += instance.OnPrimaryTouch;
+            @SecondTouch.started += instance.OnSecondTouch;
+            @SecondTouch.performed += instance.OnSecondTouch;
+            @SecondTouch.canceled += instance.OnSecondTouch;
         }
 
         /// <summary>
@@ -747,6 +552,12 @@ public partial class @InputActions_Scene1: IInputActionCollection2, IDisposable
             @Tap.started -= instance.OnTap;
             @Tap.performed -= instance.OnTap;
             @Tap.canceled -= instance.OnTap;
+            @PrimaryTouch.started -= instance.OnPrimaryTouch;
+            @PrimaryTouch.performed -= instance.OnPrimaryTouch;
+            @PrimaryTouch.canceled -= instance.OnPrimaryTouch;
+            @SecondTouch.started -= instance.OnSecondTouch;
+            @SecondTouch.performed -= instance.OnSecondTouch;
+            @SecondTouch.canceled -= instance.OnSecondTouch;
         }
 
         /// <summary>
@@ -1055,6 +866,20 @@ public partial class @InputActions_Scene1: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnTap(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "PrimaryTouch" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPrimaryTouch(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SecondTouch" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSecondTouch(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Pingjin" which allows adding and removing callbacks.

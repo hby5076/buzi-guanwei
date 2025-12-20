@@ -1,215 +1,159 @@
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
+using System;
+using UnityEngine.InputSystem;
 
-public class InputTester : MonoBehaviour
+public class InputTester_Scene1 : MonoBehaviour
 {
-    [Header("UI显示组件")]
-    public TextMeshProUGUI statusText; // 用于显示整体状态
-    public TextMeshProUGUI touch1Text; // 显示主触摸
-    public TextMeshProUGUI touch2Text; // 显示次触摸/点击
-    public TextMeshProUGUI gyroText;   // 显示陀螺仪数据
-    public TextMeshProUGUI pinchText;  // 显示捏合数据
-    public TextMeshProUGUI eventLogText; // 显示事件触发日志
-
-    [Header("触摸点视觉表示")]
-    public RectTransform touch1Indicator; // 主触摸点UI指示器
-    public RectTransform touch2Indicator; // 次触摸点UI指示器
-
-    // 用于记录事件
-    private string logContent = "";
-    private const int MAX_LOG_LINES = 5;
+    private InputManager_Scene1 inputManager;
+    
+    // 用于在屏幕上显示的状态信息
+    private string displayMessage = "等待 InputManager 初始化...";
+    private Vector3 lastTilt = Vector3.zero;
+    private Vector2 lastPrimaryPos = Vector2.zero;
+    private float lastPinchDelta = 0f;
 
     void Start()
     {
-        // 确保有UI组件
-        if (statusText == null) Debug.LogWarning("请在Inspector中为InputTester绑定UI Text组件。");
-
-        // 订阅InputManager的所有事件
-        if (InputManager_Scene1.Instance != null)
+        // 获取单例
+        inputManager = InputManager_Scene1.Instance;
+        if (inputManager == null)
         {
-            InputManager_Scene1.Instance.OnPrimaryTouchMoved += UpdatePrimaryTouch;
-            InputManager_Scene1.Instance.OnSecondaryTapPerformed += UpdateSecondaryTap;
-            InputManager_Scene1.Instance.OnDeviceTiltChanged += UpdateGyroData;
-            InputManager_Scene1.Instance.OnPinchDeltaChanged += UpdatePinchData;
-
-            LogEvent("InputTester: 已成功订阅所有输入事件。");
-        }
-        else
-        {
-            LogEvent("错误: InputManager 实例未找到！");
-        }
-    }
-
-    void Update()
-    {
-        // 更新整体状态信息（每帧）
-        UpdateStatusDisplay();
-
-        // 如果没有触发移动事件，则尝试从InputManager直接读取次触摸位置（例如长按时）
-        UpdateSecondaryTouchPosition();
-    }
-
-    void UpdateStatusDisplay()
-    {
-        if (statusText != null)
-        {
-            string envInfo = InputManager_Scene1.Instance?.GetInputEnvironmentInfo() ?? "InputManager为空";
-            statusText.text = $"输入系统测试器\n" +
-                              $"================\n" +
-                              $"{envInfo}\n" +
-                              $"当前输入映射: {GetCurrentActionMapName()}\n" +
-                              $"帧率: {Mathf.Round(1.0f / Time.deltaTime)} FPS";
-        }
-    }
-
-    void UpdatePrimaryTouch(Vector2 screenPos)
-    {
-        // 更新主触摸文本
-        if (touch1Text != null)
-        {
-            Vector2 localPos;
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                touch1Text.rectTransform.parent as RectTransform,
-                screenPos, null, out localPos
-            );
-            touch1Text.text = $"主触摸 (引导指):\n" +
-                              $"屏幕坐标: {screenPos:F0}\n" +
-                              $"本地坐标: {localPos:F0}";
+            displayMessage = "错误：场景中未找到 InputManager_Scene1 实例！";
+            Debug.LogError(displayMessage);
+            return;
         }
 
-        // 更新主触摸点视觉指示器
-        if (touch1Indicator != null)
-        {
-            touch1Indicator.anchoredPosition = screenPos;
-            touch1Indicator.gameObject.SetActive(true);
-        }
+        // 默认初始化为 Pingjin 模式
+        inputManager.SetMode("Pingjin");
+        displayMessage = "测试启动：当前模式 - Pingjin";
 
-        LogEvent($"主触摸移动: {screenPos}");
-    }
+        // ----------------------------------------------------
+        // 订阅事件 (与新版 InputManager 保持一致)
+        // ----------------------------------------------------
+        
+        // Pingjin (平金) 模式事件
+        inputManager.OnPrimaryTouchContactStarted += HandlePrimaryStarted;
+        inputManager.OnPrimaryTouchContactCanceled += HandlePrimaryCanceled;
+        inputManager.OnSecondaryTapPerformed += HandleSecondaryTap;
+        inputManager.OnDeviceTilt += HandleDeviceTilt;
 
-    void UpdateSecondaryTap(Vector2 screenPos)
-    {
-        // 更新次触摸文本
-        if (touch2Text != null)
-        {
-            touch2Text.text = $"次触摸点击 (钉固):\n" +
-                              $"屏幕坐标: {screenPos:F0}\n" +
-                              $"操作: 钉固触发";
-        }
+        // Duiling (堆绫) 模式事件
+        inputManager.OnDuilingTapPerformed += HandleDuilingTap;
+        inputManager.OnDragPerformed += HandleDragPerformed;
+        inputManager.OnPinchDeltaChanged += HandlePinchDelta; // 现在接收 float
 
-        // 更新次触摸点视觉指示器（短暂高亮）
-        if (touch2Indicator != null)
-        {
-            touch2Indicator.anchoredPosition = screenPos;
-            touch2Indicator.gameObject.SetActive(true);
-            // 可以在这里触发一个缩放或颜色变化的动画来表示点击
-        }
+        // Panjin (盘金) 模式事件
+        inputManager.OnTraceContactStarted += HandleTraceStarted;
+        inputManager.OnTraceContactCanceled += HandleTraceCanceled;
+        inputManager.OnNeedlePositionMoved += HandleNeedlePositionMoved;
 
-        LogEvent($"次触摸点击 (钉固) 于: {screenPos}");
-    }
-
-    void UpdateSecondaryTouchPosition()
-    {
-        // 这个函数持续更新次触摸位置（即使没有点击事件），对于按住Alt模拟第二指很有用
-        if (InputManager.Instance != null && touch2Text != null)
-        {
-            Vector2 secondaryPos = InputManager_Scene1.Instance.GetSecondaryTouchPosition();
-            if (secondaryPos != Vector2.zero)
-            {
-                touch2Text.text = $"次触摸 (操作指):\n" +
-                                  $"屏幕坐标: {secondaryPos:F0}\n" +
-                                  $"状态: 正在模拟/触摸";
-                if (touch2Indicator != null)
-                {
-                    touch2Indicator.anchoredPosition = secondaryPos;
-                    touch2Indicator.gameObject.SetActive(true);
-                }
-            }
-            else if (!touch2Indicator.gameObject.activeSelf)
-            {
-                // 如果没有次触摸数据，且指示器当前不是因点击而显示，则清除文本的部分信息
-                touch2Text.text = $"次触摸 (操作指):\n" +
-                                  $"状态: 未激活";
-            }
-        }
-    }
-
-    void UpdateGyroData(Vector3 angularVelocity)
-    {
-        // 更新陀螺仪文本
-        if (gyroText != null)
-        {
-            gyroText.text = $"陀螺仪 (角速度):\n" +
-                            $"X: {angularVelocity.x:F3}\n" +
-                            $"Y: {angularVelocity.y:F3}\n" +
-                            $"Z: {angularVelocity.z:F3}\n" +
-                            $"幅度: {angularVelocity.magnitude:F3}";
-        }
-
-        // 为了清晰，我们只记录幅度较大的倾斜
-        if (angularVelocity.magnitude > 0.1f)
-        {
-            LogEvent($"设备倾斜: {angularVelocity}");
-        }
-    }
-
-    void UpdatePinchData(float delta)
-    {
-        // 更新捏合文本
-        if (pinchText != null)
-        {
-            string direction = delta > 0 ? "放大 (E键)" : "缩小 (Q键)";
-            pinchText.text = $"双指捏合模拟:\n" +
-                             $"Delta: {delta:F3}\n" +
-                             $"方向: {direction}\n" +
-                             $"状态: {(Mathf.Abs(delta) > 0.01f ? "进行中" : "未激活")}";
-        }
-
-        if (Mathf.Abs(delta) > 0.01f)
-        {
-            LogEvent($"捏合输入: {delta:F3}");
-        }
-    }
-
-    void LogEvent(string message)
-    {
-        logContent = $"[{Time.time:F2}] {message}\n" + logContent;
-
-        // 限制日志行数
-        string[] lines = logContent.Split('\n');
-        if (lines.Length > MAX_LOG_LINES)
-        {
-            logContent = string.Join("\n", lines, 0, MAX_LOG_LINES);
-        }
-
-        if (eventLogText != null)
-        {
-            eventLogText.text = "最近事件:\n" + logContent;
-        }
-        else
-        {
-            Debug.Log(message); // 同时输出到Unity控制台
-        }
-    }
-
-    string GetCurrentActionMapName()
-    {
-        if (InputManager.Instance == null) return "未知";
-        // 注意: 这里需要根据你的状态机逻辑来判断，或者为InputManager添加一个公开属性
-        // 暂时返回一个占位符
-        return "根据StateManager判断";
+        Debug.Log("[Test] 输入系统测试脚本已就绪。");
     }
 
     void OnDestroy()
     {
-        // 取消订阅，防止内存泄漏
-        if (InputManager.Instance != null)
+        if (inputManager != null)
         {
-            InputManager_Scene1.Instance.OnPrimaryTouchMoved -= UpdatePrimaryTouch;
-            InputManager_Scene1.Instance.OnSecondaryTapPerformed -= UpdateSecondaryTap;
-            InputManager_Scene1.Instance.OnDeviceTiltChanged -= UpdateGyroData;
-            InputManager_Scene1.Instance.OnPinchDeltaChanged -= UpdatePinchData;
+            // 取消订阅
+            inputManager.OnPrimaryTouchContactStarted -= HandlePrimaryStarted;
+            inputManager.OnPrimaryTouchContactCanceled -= HandlePrimaryCanceled;
+            inputManager.OnSecondaryTapPerformed -= HandleSecondaryTap;
+            inputManager.OnDeviceTilt -= HandleDeviceTilt;
+            inputManager.OnDuilingTapPerformed -= HandleDuilingTap;
+            inputManager.OnDragPerformed -= HandleDragPerformed;
+            inputManager.OnPinchDeltaChanged -= HandlePinchDelta;
+            inputManager.OnTraceContactStarted -= HandleTraceStarted;
+            inputManager.OnTraceContactCanceled -= HandleTraceCanceled;
+            inputManager.OnNeedlePositionMoved -= HandleNeedlePositionMoved;
         }
+    }
+
+    // =========================================================
+    // 事件处理回调
+    // =========================================================
+
+    private void HandlePrimaryStarted() => UpdateDisplay("主触点按下");
+    private void HandlePrimaryCanceled() => UpdateDisplay("主触点抬起");
+    
+    private void HandleSecondaryTap() => UpdateDisplay("检测到双指 Tap！");
+
+    private void HandleDeviceTilt(Vector3 tilt)
+    {
+        lastTilt = tilt;
+    }
+
+    private void HandleDuilingTap() => UpdateDisplay("堆绫模式点击");
+
+    private void HandleDragPerformed(Vector2 pos)
+    {
+        lastPrimaryPos = pos;
+        // 拖拽高频更新，不建议每次都写 UpdateDisplay 干扰日志
+    }
+
+    private void HandlePinchDelta(float delta)
+    {
+        lastPinchDelta = delta;
+        UpdateDisplay($"捏合变化: {delta:F2}");
+    }
+
+    private void HandleNeedlePositionMoved(Vector2 pos)
+    {
+        lastPrimaryPos = pos;
+    }
+
+    private void HandleTraceStarted() => UpdateDisplay("盘金描摹开始");
+    private void HandleTraceCanceled() => UpdateDisplay("盘金描摹结束");
+
+    // =========================================================
+    // UI 显示
+    // =========================================================
+
+    private void UpdateDisplay(string msg)
+    {
+        displayMessage = $"{DateTime.Now:HH:mm:ss} - {msg}";
+        Debug.Log($"[InputTest] {msg}");
+    }
+
+    void OnGUI()
+    {
+        // 简单的调试界面
+        GUILayout.BeginArea(new Rect(20, 20, Screen.width - 40, Screen.height - 40));
+        
+        GUI.skin.label.fontSize = 25;
+        GUILayout.Label("<color=yellow>--- Input System 最终真机测试 ---</color>");
+        GUILayout.Label($"状态: {displayMessage}");
+        GUILayout.Space(20);
+
+        // 数据面板
+        GUI.skin.label.fontSize = 20;
+        GUILayout.Label($"当前模式: {GetCurrentModeName()}");
+        GUILayout.Label($"主触点位置: {inputManager.GetPrimaryTouchPosition():F0}");
+        GUILayout.Label($"次触点位置: {inputManager.GetSecondaryTouchPosition():F0}");
+        GUILayout.Space(10);
+        
+        GUILayout.Label($"<color=cyan>陀螺仪 (Tilt): {lastTilt:F2}</color>");
+        GUILayout.Label("传感器状态: " + (UnityEngine.InputSystem.AttitudeSensor.current?.enabled == true ? "激活" : "未激活"));
+        GUILayout.Label($"<color=lime>捏合 (Pinch Delta): {lastPinchDelta:F2}</color>");
+        
+        GUILayout.FlexibleSpace();
+
+        // 模式切换按钮
+        GUILayout.Label("切换 Action Map:");
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("平金 (Pingjin)", GUILayout.Height(80))) inputManager.SetMode("Pingjin");
+        if (GUILayout.Button("堆绫 (Duiling)", GUILayout.Height(80))) inputManager.SetMode("Duiling");
+        if (GUILayout.Button("盘金 (Panjin)", GUILayout.Height(80))) inputManager.SetMode("Panjin");
+        GUILayout.EndHorizontal();
+
+        GUILayout.EndArea();
+    }
+
+    private string GetCurrentModeName()
+    {
+        if (inputManager == null || inputManager.inputActions == null) return "Unknown";
+        if (inputManager.inputActions.Pingjin.enabled) return "Pingjin (平金)";
+        if (inputManager.inputActions.Duiling.enabled) return "Duiling (堆绫)";
+        if (inputManager.inputActions.Panjin.enabled) return "Panjin (盘金)";
+        return "None";
     }
 }
