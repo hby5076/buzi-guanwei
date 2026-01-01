@@ -13,8 +13,12 @@ public class InputManager_Scene1 : MonoBehaviour,
 {
     public static InputManager_Scene1 Instance { get; private set; }
 
+    public InputActions_Scene1 Actions { get; private set; }
+
     [Header("设置")]
     [SerializeField] private float _pinchThreshold = 0.5f; // 捏合触发阈值
+
+    [SerializeField] private NeedleFollower needleController;
 
     // 资产引用
     public InputActions_Scene1 inputActions;
@@ -297,7 +301,30 @@ public class InputManager_Scene1 : MonoBehaviour,
         return Vector2.zero;
     }
 
+    public void OnNeedlePosition(InputAction.CallbackContext context)
+    {
+        if (!context.performed) return;
 
+        Vector2 screenPos = context.ReadValue<Vector2>();
+    
+        // 原逻辑：needleController.UpdateNeedlePosition(screenPos);
+        // 修正逻辑：触发事件，让所有订阅者（包括你的 NeedPoint）都能收到
+        OnNeedlePositionMoved?.Invoke(screenPos); 
+    }
+
+    public void OnTraceContact(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            // needleController.SetTracing(true);
+            OnTraceContactStarted?.Invoke();
+        }
+        else if (context.canceled)
+        {
+            // needleController.SetTracing(false);
+            OnTraceContactCanceled?.Invoke();
+        }
+    }
 
     // =========================================================
     // 模式切换 (Mode Switching)

@@ -1,9 +1,16 @@
+using System.Runtime.CompilerServices;
 using UnityEngine;
+using System.Collections;
 
 public class PieceBehaviour : MonoBehaviour
 {
-    public enum PieceType { Base, Water, Cloud, Treasure }
+    public enum PieceType { Base, Water, Cloud, Grass }
     public PieceType Type = PieceType.Water;
+
+    public SpriteRenderer TargetGhost;
+    public float FlashSpeed = 2f;
+
+    private Coroutine _flashCoroutine;
 
     [Header("Snap")]
     public Transform SnapTarget;
@@ -13,14 +20,15 @@ public class PieceBehaviour : MonoBehaviour
     [Header("Flatten / Stitches")]
     public GameObject Stitches; 
     [HideInInspector] public bool IsFlattened = false;
+    public Vector3 _looseScale;
 
     [Header("Visual")]
     public int LayerIndex = 0; 
 
     private void Start()
     {
+        _looseScale = transform.localScale;
         if(Stitches != null) Stitches.SetActive(false);
-        transform.localScale = Vector3.one * 1.05f;
     }
 
     public void SnapToTarget(bool instant = false)
@@ -40,8 +48,59 @@ public class PieceBehaviour : MonoBehaviour
     public void SetFlattened(bool flat)
     {
         IsFlattened = flat;
+        SetGhostVisible(false);
         if (Stitches != null) Stitches.SetActive(flat);
         // 视觉反馈：彻底固定感
-        transform.localScale = flat ? Vector3.one : Vector3.one * 1.05f;
+        transform.localScale = flat ? Vector3.one * 180f : _looseScale;
+
+        Collider col = GetComponent<Collider>();
+        if(col != null)
+        {
+            col.enabled = !flat;
+        }
+    }
+
+    public void SetGhostVisible(bool visible)
+    {
+        if(TargetGhost == null || IsFlattened)
+        {
+            if (TargetGhost != null)
+            {
+                TargetGhost.gameObject.SetActive(false);
+            }
+            return;
+        }
+
+        if (visible)
+        {
+            TargetGhost.gameObject.SetActive(true);
+
+            if (_flashCoroutine == null)
+            {
+                _flashCoroutine = StartCoroutine(DoFlash());
+            }
+        }
+        else
+        {
+            if(_flashCoroutine != null)
+            {
+                StopCoroutine(_flashCoroutine);
+                _flashCoroutine = null;
+            }
+            TargetGhost.gameObject.SetActive(false);
+        }
+    }
+
+    private IEnumerator DoFlash()
+    {
+        while (true)
+        {
+            // 使用 Sin 函数控制 Alpha 值在 0.2 到 0.6 之间变化
+            float alpha = 0.4f + Mathf.Sin(Time.time * FlashSpeed) * 0.2f;
+            Color c = TargetGhost.color;
+            c.a = alpha;
+            TargetGhost.color = c;
+            yield return null;
+        }
     }
 }
